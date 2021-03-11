@@ -1,10 +1,12 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
 from blockchain import Blockchain
 import base64
 from PIL import Image
 from io import BytesIO
-import matplotlib.pyplot as plt
 from argparse import ArgumentParser
+from uuid import uuid4
+import json
+import threading
 
 app = Flask(__name__)
 
@@ -14,15 +16,107 @@ app = Flask(__name__)
 #     a = Blockchain.test()
 #     print(a)
 #     return True
+###################################################################################
+###################################################################################
+###################################################################################
+# Generate a globally unique address for this node
+node_identifier = str(uuid4()).replace('-', '')
+# Instantiate the Blockchain
+blockchain = Blockchain()
+
+
+@ app.route('/chain', methods=['GET'])
+def full_chain():
+    chains = blockchain.chain
+    response = {
+        # 'chain': blockchain.chain,
+        'chain': chains,
+        'length': len(blockchain.chain),
+    }
+    return jsonify(response), 200
+
+
+def new_mine():
+    new_tran()
+    replaced = blockchain.resolve_conflicts()
+
+    if replaced:
+        print(':: Our chain was replaced ::')
+    else:
+        print(':: Our chain is representative ::')
+
+    # 노드 검증
+    last_block = blockchain.last_block
+    proof = blockchain.proof_of_work(last_block)
+
+    previous_hash = blockchain.hash(last_block)
+    block = blockchain.new_block(proof, previous_hash)
+
+    response = '''[ NOTICE ] %s번째 블록이 생성되었습니다. | proof=%s | transaction Length=%s |''' % (
+        block['index'], block['proof'], len(block['transactions']))
+
+    print(response)
+    threading.Timer(5, new_mine).start()
+
+
+@ app.route('/nodes/register', methods=['POST'])
+def register_nodes():
+    values = request.get_json()
+
+    nodes = values.get('nodes')
+    if nodes is None:
+        return "Error: Please supply a valid list of nodes", 400
+
+    for node in nodes:
+        blockchain.register_node(node)
+
+    response = {
+        'message': 'New nodes have been added',
+        'total_nodes': list(blockchain.nodes),
+    }
+    return jsonify(response), 201
+
+
+# @ app.route('/tran/new', methods=['POST'])
+def new_tran():
+    # snapshot part
+    with open('./image.png', 'rb') as img:
+        base64_string = base64.b64encode(img.read())
+
+    # imgdata = base64.b64decode(base64_string)
+    imgdata = base64_string.decode('utf-8')
+    # jsonObj = json.dumps({'location': loc, 'name': name,
+    #                       'phone': phone}, ensure_ascii=False)
+    jsonObj = json.dumps({'snapshot': imgdata}, ensure_ascii=False)
+    jsonObj = json.loads(jsonObj)
+
+    ######################
+    # ENCODING PART
+    ######################
+    # imgdata = base64.b64decode(base64_string)
+    # filename = 'some_image.jpg'  # I assume you have a way of picking unique filenames
+    # with open(filename, 'wb') as f:
+    #     f.write(imgdata)
+    ######################
+    # required = ['location', 'name', 'phone']
+    required = ['snapshot']
+    if not all(k in jsonObj for k in required):
+        return 'Missing values', 400
+
+    # Create a new Transaction
+    # index = blockchain.new_transaction(
+    #     jsonObj['location'], jsonObj['name'], jsonObj['phone'])
+    index = blockchain.new_transaction(
+        jsonObj['snapshot'])
+###################################################################################
+###################################################################################
+###################################################################################
 
 
 @app.route('/')
 def index():
 
-    with open('./image.png', 'rb') as img:
-        base64_string = base64.b64encode(img.read())
-
-    return render_template('index.html', arg=base64_string, len=len(base64_string))
+    return render_template('index.html')
 
 
 if __name__ == '__main__':
@@ -31,10 +125,6 @@ if __name__ == '__main__':
                         type=int, help='port to listen on')
     args = parser.parse_args()
     port = args.port
-    with open('./image.png', 'rb') as img:
-        base64_string = base64.b64encode(img.read())
-
-    img = Image.open(BytesIO(base64.b64decode(base64_string)))
-    plt.imshow(img)
+    new_mine()
     app.run(host='0.0.0.0', port=port, debug=True,
             use_reloader=False, threaded=True)

@@ -119,7 +119,7 @@ class Blockchain:
         self.chain.append(block)
         return block
 
-    def new_transaction(self, candidate):
+    def new_transaction(self, imgFile):
         """
         Creates a new transaction to go into the next mined Block
         :param sender: Address of the Sender
@@ -128,7 +128,7 @@ class Blockchain:
         :return: The index of the Block that will hold this transaction
         """
         self.current_transactions.append({
-            'candidate': candidate,
+            'img': imgFile,
         })
 
         return self.last_block['index'] + 1
