@@ -1,14 +1,39 @@
 from flask import Flask, request, render_template, jsonify
 from blockchain import Blockchain
 import base64
-from PIL import Image
-from io import BytesIO
 from argparse import ArgumentParser
 from uuid import uuid4
 import json
 import threading
+import cv2
+import shutil
+import os
+from multiprocessing import Process
 
 app = Flask(__name__)
+
+
+# Module :: Snopsnot cam display
+def catchCam():
+
+    capture = cv2.VideoCapture(0)
+    capture.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+    capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+
+    while cv2.waitKey(33) < 0:
+        ret, frame = capture.read()
+        cv2.imwrite('./img/a.jpg', frame)
+        #############
+
+        shutil.copyfile(os.path.join('./img', 'a.jpg'),
+                        os.path.join('./img', 'a_tmp.jpg'))
+
+        #############
+        cv2.imwrite('./img/a.jpg', frame)
+
+    capture.release()
+    cv2.destroyAllWindows()
+
 
 # How to use another method that involved other file's Class
 # @app.route('/test')
@@ -78,9 +103,16 @@ def register_nodes():
 
 
 # @ app.route('/tran/new', methods=['POST'])
+img_tmp = 'a'
+cnt = 1
+
+
 def new_tran():
+    # declare global variable
+    global img_tmp
+    global cnt
     # snapshot part
-    with open('./image.png', 'rb') as img:
+    with open('./img/a_tmp.jpg', 'rb') as img:
         base64_string = base64.b64encode(img.read())
 
     # imgdata = base64.b64decode(base64_string)
@@ -89,6 +121,12 @@ def new_tran():
     #                       'phone': phone}, ensure_ascii=False)
     jsonObj = json.dumps({'snapshot': imgdata}, ensure_ascii=False)
     jsonObj = json.loads(jsonObj)
+
+    # Save image file module
+    filename = 'test{0}.jpg'.format(cnt)
+    with open(filename, 'wb') as f:
+        f.write(base64.b64decode(imgdata))
+    cnt = cnt + 1
 
     ######################
     # ENCODING PART
@@ -125,6 +163,11 @@ if __name__ == '__main__':
                         type=int, help='port to listen on')
     args = parser.parse_args()
     port = args.port
+    p1 = Process(target=new_mine)
+    p2 = Process(target=catchCam)
+
     new_mine()
+    p2.start()
+    # new_mine()
     app.run(host='0.0.0.0', port=port, debug=True,
             use_reloader=False, threaded=True)
