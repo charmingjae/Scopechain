@@ -25,6 +25,8 @@
 
 import cv2
 
+import shutil
+
 capture = cv2.VideoCapture(0)
 capture.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
@@ -32,10 +34,13 @@ capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 while cv2.waitKey(33) < 0:
     ret, frame = capture.read()
     #############
-    cpimg = frame[:, :].copy()
-    cpimg.fill(0)
+    # cpimg = frame[:, :].copy()
+    # cpimg.fill(0)
+
+    shutil.move('./img/a.jpg', './img/a_tmp.jpg')
+
     #############
-    cv2.imwrite('./a.jpg', frame)
+    cv2.imwrite('./img/a.jpg', frame)
 
 capture.release()
 cv2.destroyAllWindows()
