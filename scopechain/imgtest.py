@@ -2,7 +2,6 @@ import cv2
 import base64
 from PIL import Image
 from io import BytesIO
-import io
 import matplotlib.pyplot as plt
 import numpy as np
 
