@@ -9,6 +9,7 @@ import cv2
 import shutil
 import os
 from multiprocessing import Process
+from tele import chat_id, bot
 
 app = Flask(__name__)
 
