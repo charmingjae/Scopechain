@@ -11,6 +11,8 @@ import os
 from multiprocessing import Process
 from tele import chat_id, bot
 
+from PIL import Image
+
 app = Flask(__name__)
 
 # Module :: Snopsnot cam display
@@ -134,7 +136,7 @@ def new_tran():
 
     # imgdata = base64.b64decode(base64_string)
     imgdata = base64_string.decode('utf-8')
-    print(imgdata)
+    # print(imgdata)
     # jsonObj = json.dumps({'location': loc, 'name': name,
     #                       'phone': phone}, ensure_ascii=False)
     jsonObj = json.dumps({'snapshot': imgdata}, ensure_ascii=False)
@@ -145,6 +147,11 @@ def new_tran():
     with open(filename, 'wb') as f:
         cv2.imwrite(filename, test)
     cnt = cnt + 1
+
+    # Bot part
+    # print(test)
+    img = Image.fromarray(test, 'RGB')
+    bot.sendPhoto(chat_id=chat_id, photo=img)
 
     ######################
     # ENCODING PART
