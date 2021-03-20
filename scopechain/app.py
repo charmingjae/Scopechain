@@ -149,7 +149,7 @@ def new_tran():
     cnt = cnt + 1
 
     # Bot part
-    # print(test)
+    # Convert numpy array to Image using PIL
     img = Image.fromarray(test, 'RGB')
     bot.sendPhoto(chat_id=chat_id, photo=img)
 
