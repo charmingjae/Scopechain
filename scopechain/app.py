@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template, jsonify
+from telegram import message
 from blockchain import Blockchain
 import base64
 from argparse import ArgumentParser
@@ -10,6 +11,7 @@ import shutil
 import os
 from multiprocessing import Process
 from tele import chat_id, bot
+import numpy as np
 
 from PIL import Image
 
@@ -150,8 +152,10 @@ def new_tran():
 
     # Bot part
     # Convert numpy array to Image using PIL
-    img = Image.fromarray(test, 'RGB')
-    bot.sendPhoto(chat_id=chat_id, photo=img)
+    converted_img = Image.fromarray(test, 'RGB')
+
+    # Success send image from local file
+    # bot.sendPhoto(chat_id=chat_id, photo=open('./test1.jpg', 'rb'))
 
     ######################
     # ENCODING PART
@@ -176,7 +180,7 @@ def new_tran():
 ###################################################################################
 
 
-@app.route('/')
+@ app.route('/')
 def index():
 
     return render_template('index.html')
