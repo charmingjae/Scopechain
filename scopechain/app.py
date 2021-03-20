@@ -12,6 +12,9 @@ import os
 from multiprocessing import Process
 from tele import chat_id, bot
 import numpy as np
+import uuid
+
+from io import BytesIO
 
 from PIL import Image
 
@@ -152,10 +155,17 @@ def new_tran():
 
     # Bot part
     # Convert numpy array to Image using PIL
+
     converted_img = Image.fromarray(test, 'RGB')
 
-    # Success send image from local file
-    # bot.sendPhoto(chat_id=chat_id, photo=open('./test1.jpg', 'rb'))
+    ################################### temp############################
+    bio = BytesIO()
+    bio.name = str(uuid.uuid4())
+    converted_img.save(bio, 'JPEG')
+    bio.seek(0)
+    bot.sendPhoto(
+        chat_id=chat_id, photo=bio)
+    ####################################################################
 
     ######################
     # ENCODING PART
