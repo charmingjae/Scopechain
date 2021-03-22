@@ -19,7 +19,7 @@ import pickle
 
 app = Flask(__name__)
 
-# Module :: Snopsnot cam display
+# Module :: Snapshot cam display
 capture = cv2.VideoCapture(0)
 capture.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
@@ -140,6 +140,7 @@ def new_tran():
     b64 = b64.decode('utf-8')
     # print(b64)
     # print(pickle.loads(base64.b64decode(b64)))
+    # 블록에 저장되어 있는 바이트 문자를 다시 numpy array로 가져올 때 아래와 같이 하면 된다.
     # print(np.array_equal(pickle.loads(base64.b64decode(b64)), test))
     ####################################
     jsonObj = json.dumps(
@@ -158,17 +159,6 @@ def new_tran():
     # Bot part
     # Convert numpy array to Image using PIL
     converted_img = Image.fromarray(test, 'RGB')
-
-######
-    # encode imgdata to bytes object
-    # print(imgdata.encode('utf-8') == base64_string)
-    # print(type(imgdata.encode('utf-8')))
-    # print(type(test))
-    # print(test.shape)
-    # r = base64.b64decode(base64_string)
-    # q = np.frombuffer(r, dtype=np.int)
-
-    #######
 
     # 나중에 def로 분리할지 생각 해보기
     bio = BytesIO()
