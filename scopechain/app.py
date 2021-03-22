@@ -11,18 +11,14 @@ import shutil
 import os
 from multiprocessing import Process
 from tele import chat_id, bot
-import numpy as np
 import uuid
-
 from io import BytesIO
-
 from PIL import Image
+import numpy as np
 
 app = Flask(__name__)
 
 # Module :: Snopsnot cam display
-
-
 capture = cv2.VideoCapture(0)
 capture.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
@@ -130,51 +126,52 @@ def new_tran():
     global cnt
 
     test = catchCam()
-    print(type(test))
-    # snapshot part
-    # with open('./img/a_tmp.jpg', 'rb') as img:
-    #     base64_string = base64.b64encode(img.read())
 
     # encode image
     base64_string = base64.b64encode(test)
-    print(type(base64_string))
-
-    # imgdata = base64.b64decode(base64_string)
     imgdata = base64_string.decode('utf-8')
-    # print(imgdata)
     # jsonObj = json.dumps({'location': loc, 'name': name,
     #                       'phone': phone}, ensure_ascii=False)
     jsonObj = json.dumps({'snapshot': imgdata}, ensure_ascii=False)
     jsonObj = json.loads(jsonObj)
 
     # Save image file module
-    filename = 'test{0}.jpg'.format(cnt)
-    with open(filename, 'wb') as f:
-        cv2.imwrite(filename, test)
-    cnt = cnt + 1
+    # filename = 'test{0}.jpg'.format(cnt)
+    # with open(filename, 'wb') as f:
+    #     cv2.imwrite(filename, test)
+    # cnt = cnt + 1
 
     # Bot part
     # Convert numpy array to Image using PIL
-
     converted_img = Image.fromarray(test, 'RGB')
 
-    ################################### temp############################
+######
+    # encode imgdata to bytes object
+    print(imgdata.encode('utf-8') == base64_string)
+    print(type(imgdata.encode('utf-8')))
+    print(type(test))
+    print(test.shape)
+    r = base64.b64decode(base64_string)
+    q = np.frombuffer(r, dtype=np.int)
+
+    #######
+
+    # 나중에 def로 분리할지 생각 해보기
     bio = BytesIO()
     bio.name = str(uuid.uuid4())
     converted_img.save(bio, 'JPEG')
     bio.seek(0)
     bot.sendPhoto(
         chat_id=chat_id, photo=bio)
-    ####################################################################
 
-    ######################
-    # ENCODING PART
-    ######################
-    # imgdata = base64.b64decode(base64_string)
-    # filename = 'some_image.jpg'  # I assume you have a way of picking unique filenames
-    # with open(filename, 'wb') as f:
-    #     f.write(imgdata)
-    ######################
+    ################################### temp############################
+    # bio = BytesIO()
+    # bio.name = str(uuid.uuid4())
+    # converted_img.save(bio, 'JPEG')
+    # bio.seek(0)
+    # bot.sendPhoto(
+    #     chat_id=chat_id, photo=bio)
+    ####################################################################
     # required = ['location', 'name', 'phone']
     required = ['snapshot']
     if not all(k in jsonObj for k in required):
