@@ -15,6 +15,7 @@ import uuid
 from io import BytesIO
 from PIL import Image
 import numpy as np
+import pickle
 
 app = Flask(__name__)
 
@@ -127,13 +128,26 @@ def new_tran():
 
     test = catchCam()
 
+    # ################## backup #################
     # encode image
-    base64_string = base64.b64encode(test)
-    imgdata = base64_string.decode('utf-8')
+    # base64_string = base64.b64encode(test)
+    # imgdata = base64_string.decode('utf-8')
+    ##############################################
     # jsonObj = json.dumps({'location': loc, 'name': name,
     #                       'phone': phone}, ensure_ascii=False)
-    jsonObj = json.dumps({'snapshot': imgdata}, ensure_ascii=False)
+    ####################################
+    b64 = base64.b64encode(pickle.dumps(test))
+    b64 = b64.decode('utf-8')
+    # print(b64)
+    # print(pickle.loads(base64.b64decode(b64)))
+    # print(np.array_equal(pickle.loads(base64.b64decode(b64)), test))
+    ####################################
+    jsonObj = json.dumps(
+        {'snapshot': b64}, ensure_ascii=False)
     jsonObj = json.loads(jsonObj)
+    filename = 'test{0}.jpg'.format(cnt)
+    with open(filename, 'wb') as f:
+        cv2.imwrite(filename, np.array(test.tolist()))
 
     # Save image file module
     # filename = 'test{0}.jpg'.format(cnt)
@@ -147,12 +161,12 @@ def new_tran():
 
 ######
     # encode imgdata to bytes object
-    print(imgdata.encode('utf-8') == base64_string)
-    print(type(imgdata.encode('utf-8')))
-    print(type(test))
-    print(test.shape)
-    r = base64.b64decode(base64_string)
-    q = np.frombuffer(r, dtype=np.int)
+    # print(imgdata.encode('utf-8') == base64_string)
+    # print(type(imgdata.encode('utf-8')))
+    # print(type(test))
+    # print(test.shape)
+    # r = base64.b64decode(base64_string)
+    # q = np.frombuffer(r, dtype=np.int)
 
     #######
 
@@ -164,14 +178,6 @@ def new_tran():
     bot.sendPhoto(
         chat_id=chat_id, photo=bio)
 
-    ################################### temp############################
-    # bio = BytesIO()
-    # bio.name = str(uuid.uuid4())
-    # converted_img.save(bio, 'JPEG')
-    # bio.seek(0)
-    # bot.sendPhoto(
-    #     chat_id=chat_id, photo=bio)
-    ####################################################################
     # required = ['location', 'name', 'phone']
     required = ['snapshot']
     if not all(k in jsonObj for k in required):
