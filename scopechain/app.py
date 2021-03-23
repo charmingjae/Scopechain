@@ -1,3 +1,5 @@
+from telegram.ext import Updater
+from telegram.ext import CommandHandler
 from flask import Flask, request, render_template, jsonify
 from telegram import message
 from blockchain import Blockchain
@@ -10,7 +12,7 @@ import cv2
 import shutil
 import os
 from multiprocessing import Process
-from tele import chat_id, bot
+from tele import chat_id, bot, token
 import uuid
 from io import BytesIO
 from PIL import Image
@@ -18,6 +20,17 @@ import numpy as np
 import pickle
 
 app = Flask(__name__)
+
+# updater
+# updater = Updater(token=token, use_context=True)
+
+# dispatcher = updater.dispatcher
+
+
+# start_handler = CommandHandler('start', runbot)
+# dispatcher.add_handler(start_handler)
+# updater.start_polling()
+
 
 # Module :: Snapshot cam display
 capture = cv2.VideoCapture(0)
@@ -136,6 +149,8 @@ def new_tran():
     # jsonObj = json.dumps({'location': loc, 'name': name,
     #                       'phone': phone}, ensure_ascii=False)
     ####################################
+
+    # b64로 인코드 후 utf-8로 디코딩함
     b64 = base64.b64encode(pickle.dumps(test))
     b64 = b64.decode('utf-8')
     # print(b64)
@@ -165,8 +180,9 @@ def new_tran():
     bio.name = str(uuid.uuid4())
     converted_img.save(bio, 'JPEG')
     bio.seek(0)
-    bot.sendPhoto(
-        chat_id=chat_id, photo=bio)
+    # Send Photo 잠시 막아둠
+    # bot.sendPhoto(
+    #     chat_id=chat_id, photo=bio)
 
     # required = ['location', 'name', 'phone']
     required = ['snapshot']
@@ -182,6 +198,39 @@ def new_tran():
 ###################################################################################
 ###################################################################################
 
+    # updater
+    # updater = Updater(token=token, use_context=True)
+
+    # dispatcher = updater.dispatcher
+
+    # # Command handler
+
+    # def runbot(update, context):
+    #     context.bot.send_message(
+    #         chat_id=update.effective_chat.id, text=blockchain.chain)
+
+    # start_handler = CommandHandler('start', runbot)
+    # dispatcher.add_handler(start_handler)
+    # updater.start_polling()
+
+
+def runbot(update, context):
+    convImg = blockchain.chain[-1]['transactions'][0]['img'].encode('utf-8')
+    convtImg = pickle.loads(base64.b64decode(
+        convImg))
+    converted_img = Image.fromarray(convtImg, 'RGB')
+
+    bio = BytesIO()
+    bio.name = str(uuid.uuid4())
+    converted_img.save(bio, 'JPEG')
+    bio.seek(0)
+
+    bot.sendPhoto(
+        chat_id=chat_id, photo=bio)
+
+    # context.bot.send_message(
+    #     chat_id=update.effective_chat.id, text=blockchain.chain[-1]['transactions'])
+
 
 @ app.route('/')
 def index():
@@ -190,6 +239,13 @@ def index():
 
 
 if __name__ == '__main__':
+    updater = Updater(token=token, use_context=True)
+
+    dispatcher = updater.dispatcher
+
+    start_handler = CommandHandler('start', runbot)
+    dispatcher.add_handler(start_handler)
+    updater.start_polling()
     parser = ArgumentParser()
     parser.add_argument('-p', '--port', default=5000,
                         type=int, help='port to listen on')
@@ -201,6 +257,5 @@ if __name__ == '__main__':
 
     new_mine()
     p2.start()
-    # new_mine()
     app.run(host='0.0.0.0', port=port, debug=True,
             use_reloader=False, threaded=True)
