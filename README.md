@@ -1,5 +1,5 @@
 # CCTV scope
-> 2021. 1학기  
+> 2021 - 1학기  
 
 <br/>
 
@@ -51,7 +51,7 @@ python3 app.py
 
 > Need 'Telegram bot' Access Token and link point  
 
-본 프로젝트에서는 Python3로 작성 된 블록체인에 저장 되어 있는 이미지 파일을 텔레그램으로 전송합니다.  
+본 프로젝트에서는 Python3로 작성 된 블록체인에 저장 되어 있는 이미지 객체를 텔레그램으로 전송합니다.  
 전송 방법은 Telegram에서 제공하는 [Bot API](https://core.telegram.org/bots)를 사용해서 전송하기 때문에, 개별적인 [Access Token](https://gabrielkim.tistory.com/entry/Telegram-Bot-Token-%EB%B0%8F-Chat-Id-%EC%96%BB%EA%B8%B0)과 백앤드와 Telegram을 연결하는 파일(Link point)가 필요합니다.  
 
 <br/>
