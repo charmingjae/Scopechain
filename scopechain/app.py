@@ -21,17 +21,6 @@ import pickle
 
 app = Flask(__name__)
 
-# updater
-# updater = Updater(token=token, use_context=True)
-
-# dispatcher = updater.dispatcher
-
-
-# start_handler = CommandHandler('start', runbot)
-# dispatcher.add_handler(start_handler)
-# updater.start_polling()
-
-
 # Module :: Snapshot cam display
 capture = cv2.VideoCapture(0)
 capture.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
@@ -40,20 +29,14 @@ capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
 def catchCam():
     global capture
-    # capture = cv2.VideoCapture(0)
-    # capture.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-    # capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
     while cv2.waitKey(33) < 0:
         ret, frame = capture.read()
-
-        #############
         cv2.imwrite('./img/a.jpg', frame)
 
         shutil.copyfile(os.path.join('./img', 'a.jpg'),
                         os.path.join('./img', 'a_tmp.jpg'))
 
-        #############
         cv2.imwrite('./img/a.jpg', frame)
 
         return frame
@@ -62,15 +45,6 @@ def catchCam():
     cv2.destroyAllWindows()
 
 
-# How to use another method that involved other file's Class
-# @app.route('/test')
-# def test():
-#     a = Blockchain.test()
-#     print(a)
-#     return True
-###################################################################################
-###################################################################################
-###################################################################################
 # Generate a globally unique address for this node
 node_identifier = str(uuid4()).replace('-', '')
 # Instantiate the Blockchain
@@ -81,7 +55,6 @@ blockchain = Blockchain()
 def full_chain():
     chains = blockchain.chain
     response = {
-        # 'chain': blockchain.chain,
         'chain': chains,
         'length': len(blockchain.chain),
     }
@@ -129,7 +102,6 @@ def register_nodes():
     return jsonify(response), 201
 
 
-# @ app.route('/tran/new', methods=['POST'])
 img_tmp = 'a'
 cnt = 1
 
@@ -141,35 +113,16 @@ def new_tran():
 
     test = catchCam()
 
-    # ################## backup #################
-    # encode image
-    # base64_string = base64.b64encode(test)
-    # imgdata = base64_string.decode('utf-8')
-    ##############################################
-    # jsonObj = json.dumps({'location': loc, 'name': name,
-    #                       'phone': phone}, ensure_ascii=False)
-    ####################################
-
     # b64로 인코드 후 utf-8로 디코딩함
     b64 = base64.b64encode(pickle.dumps(test))
     b64 = b64.decode('utf-8')
-    # print(b64)
-    # print(pickle.loads(base64.b64decode(b64)))
-    # 블록에 저장되어 있는 바이트 문자를 다시 numpy array로 가져올 때 아래와 같이 하면 된다.
-    # print(np.array_equal(pickle.loads(base64.b64decode(b64)), test))
-    ####################################
+
     jsonObj = json.dumps(
         {'snapshot': b64}, ensure_ascii=False)
     jsonObj = json.loads(jsonObj)
     filename = 'test{0}.jpg'.format(cnt)
     with open(filename, 'wb') as f:
         cv2.imwrite(filename, np.array(test.tolist()))
-
-    # Save image file module
-    # filename = 'test{0}.jpg'.format(cnt)
-    # with open(filename, 'wb') as f:
-    #     cv2.imwrite(filename, test)
-    # cnt = cnt + 1
 
     # Bot part
     # Convert numpy array to Image using PIL
@@ -180,11 +133,7 @@ def new_tran():
     bio.name = str(uuid.uuid4())
     converted_img.save(bio, 'JPEG')
     bio.seek(0)
-    # Send Photo 잠시 막아둠
-    # bot.sendPhoto(
-    #     chat_id=chat_id, photo=bio)
 
-    # required = ['location', 'name', 'phone']
     required = ['snapshot']
     if not all(k in jsonObj for k in required):
         return 'Missing values', 400
@@ -194,24 +143,6 @@ def new_tran():
     #     jsonObj['location'], jsonObj['name'], jsonObj['phone'])
     index = blockchain.new_transaction(
         jsonObj['snapshot'])
-###################################################################################
-###################################################################################
-###################################################################################
-
-    # updater
-    # updater = Updater(token=token, use_context=True)
-
-    # dispatcher = updater.dispatcher
-
-    # # Command handler
-
-    # def runbot(update, context):
-    #     context.bot.send_message(
-    #         chat_id=update.effective_chat.id, text=blockchain.chain)
-
-    # start_handler = CommandHandler('start', runbot)
-    # dispatcher.add_handler(start_handler)
-    # updater.start_polling()
 
 
 def runbot(update, context):
@@ -227,9 +158,6 @@ def runbot(update, context):
 
     bot.sendPhoto(
         chat_id=chat_id, photo=bio)
-
-    # context.bot.send_message(
-    #     chat_id=update.effective_chat.id, text=blockchain.chain[-1]['transactions'])
 
 
 @ app.route('/')
