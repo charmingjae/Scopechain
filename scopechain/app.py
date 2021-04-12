@@ -145,8 +145,8 @@ def new_tran():
         jsonObj['snapshot'])
 
 
-def runbot(update, context):
-    convImg = blockchain.chain[-1]['transactions'][0]['img'].encode('utf-8')
+def runbot(cnt):
+    convImg = blockchain.chain[cnt]['transactions'][0]['img'].encode('utf-8')
     convtImg = pickle.loads(base64.b64decode(
         convImg))
     converted_img = Image.fromarray(convtImg, 'RGB')
@@ -158,6 +158,20 @@ def runbot(update, context):
 
     bot.sendPhoto(
         chat_id=chat_id, photo=bio)
+
+
+# 개수 받아서 그만큼 보내기
+
+def step1(update, context):
+    cnt = int(context.args[0])
+    msg = "입력한 개수 : " + context.args[0]
+    bot.sendMessage(chat_id=chat_id, text=msg)
+    # -1부터 거꾸로 가기
+    for i in range(-1, (-1*cnt)-1, -1):
+        runbot(i)
+
+    # 입력한 개수 만큼 보내기
+    # 현재 체인 길이와 입력 개수 비교해서 체인의 길이가 더 길면 그만큼 보내고.. 아니면 체인의 길이만큼 보내기
 
 
 @ app.route('/')
@@ -172,8 +186,12 @@ if __name__ == '__main__':
     dispatcher = updater.dispatcher
 
     start_handler = CommandHandler('start', runbot)
+    step1_handler = CommandHandler('step1', step1, pass_args=True)
+
     dispatcher.add_handler(start_handler)
+    dispatcher.add_handler(step1_handler)
     updater.start_polling()
+
     parser = ArgumentParser()
     parser.add_argument('-p', '--port', default=5000,
                         type=int, help='port to listen on')
