@@ -18,6 +18,7 @@ from io import BytesIO
 from PIL import Image
 import numpy as np
 import pickle
+import datetime
 
 app = Flask(__name__)
 
@@ -118,7 +119,7 @@ def new_tran():
     b64 = b64.decode('utf-8')
 
     jsonObj = json.dumps(
-        {'snapshot': b64}, ensure_ascii=False)
+        {'snapshot': 1, 'timestamp': str(datetime.datetime.now())}, ensure_ascii=False)
     jsonObj = json.loads(jsonObj)
     filename = 'test{0}.jpg'.format(cnt)
     with open(filename, 'wb') as f:
@@ -134,7 +135,7 @@ def new_tran():
     converted_img.save(bio, 'JPEG')
     bio.seek(0)
 
-    required = ['snapshot']
+    required = ['snapshot', 'timestamp']
     if not all(k in jsonObj for k in required):
         return 'Missing values', 400
 
@@ -142,7 +143,7 @@ def new_tran():
     # index = blockchain.new_transaction(
     #     jsonObj['location'], jsonObj['name'], jsonObj['phone'])
     index = blockchain.new_transaction(
-        jsonObj['snapshot'])
+        jsonObj['snapshot'], jsonObj['timestamp'])
 
 
 def runbot(cnt):
@@ -174,6 +175,17 @@ def step1(update, context):
     # 현재 체인 길이와 입력 개수 비교해서 체인의 길이가 더 길면 그만큼 보내고.. 아니면 체인의 길이만큼 보내기
 
 
+def getcnt(update, context):
+    # parse time from args
+    time1 = context.args[0] + ' ' + context.args[1]
+    time2 = context.args[3] + ' ' + context.args[4]
+
+    # print blockchain length
+    print(len(blockchain.chain))
+    print(list(filter(lambda x: x['timestamp'] >
+                      time1 and x['timestamp'] < time2, blockchain.chain)))
+
+
 @ app.route('/')
 def index():
 
@@ -187,9 +199,11 @@ if __name__ == '__main__':
 
     start_handler = CommandHandler('start', runbot)
     step1_handler = CommandHandler('step1', step1, pass_args=True)
+    getCnt_handler = CommandHandler('getCnt', getcnt)
 
     dispatcher.add_handler(start_handler)
     dispatcher.add_handler(step1_handler)
+    dispatcher.add_handler(getCnt_handler)
     updater.start_polling()
 
     parser = ArgumentParser()
