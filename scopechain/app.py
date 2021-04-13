@@ -119,7 +119,7 @@ def new_tran():
     b64 = b64.decode('utf-8')
 
     jsonObj = json.dumps(
-        {'snapshot': 1, 'timestamp': str(datetime.datetime.now())}, ensure_ascii=False)
+        {'snapshot': b64, 'timestamp': str(datetime.datetime.now())}, ensure_ascii=False)
     jsonObj = json.loads(jsonObj)
     filename = 'test{0}.jpg'.format(cnt)
     with open(filename, 'wb') as f:
@@ -181,9 +181,11 @@ def getcnt(update, context):
     time2 = context.args[3] + ' ' + context.args[4]
 
     # print blockchain length
-    print(len(blockchain.chain))
-    print(list(filter(lambda x: x['timestamp'] >
-                      time1 and x['timestamp'] < time2, blockchain.chain)))
+    arr = list(filter(lambda x: x['timestamp'] >
+                      time1 and x['timestamp'] < time2, blockchain.chain))
+
+    for i in arr:
+        runbot(i['index'])
 
 
 @ app.route('/')

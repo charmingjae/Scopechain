@@ -91,3 +91,15 @@ bio.seek(0)
 bot.sendPhoto(chat_id=chat_id, photo=bio)
 
 ~~~
+
+<br />  
+
+> Methodology
+
+1. Get block filtered by timestamp
+
+~~~python
+
+list(filter(lambda x: x['timestamp'] > time1 and x['timestamp'] < time2, blockchain.chain))
+
+~~~
