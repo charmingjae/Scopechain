@@ -175,6 +175,19 @@ def step1(update, context):
     # 현재 체인 길이와 입력 개수 비교해서 체인의 길이가 더 길면 그만큼 보내고.. 아니면 체인의 길이만큼 보내기
 
 
+# def getcnt(update, context):
+#     # parse time from args
+#     time1 = context.args[0] + ' ' + context.args[1]
+#     time2 = context.args[3] + ' ' + context.args[4]
+
+#     # print blockchain length
+#     arr = list(filter(lambda x: x['timestamp'] >
+#                       time1 and x['timestamp'] < time2, blockchain.chain))
+
+#     for i in arr:
+#         runbot(i['index'])
+
+
 def getcnt(update, context):
     # parse time from args
     time1 = context.args[0] + ' ' + context.args[1]
@@ -184,8 +197,15 @@ def getcnt(update, context):
     arr = list(filter(lambda x: x['timestamp'] >
                       time1 and x['timestamp'] < time2, blockchain.chain))
 
+    arrIndex = []
+    print('arr length : ', len(arr))
     for i in arr:
-        runbot(i['index'])
+        if len(arrIndex) >= 10:
+            break
+        arrIndex.append(i['index'])
+    print(arrIndex)
+    for j in arrIndex:
+        runbot(j)
 
 
 @ app.route('/')
