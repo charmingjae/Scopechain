@@ -48,7 +48,7 @@ def catchCam():
 
 # Generate a globally unique address for this node
 node_identifier = str(uuid4()).replace('-', '')
-# Instantiate the Blockchain
+# Instantiate the blockchain
 blockchain = Blockchain()
 
 
@@ -63,7 +63,7 @@ def full_chain():
 
 
 def new_mine():
-    new_tran()
+    threading.Timer(5, new_tran).start()
     replaced = blockchain.resolve_conflicts()
 
     if replaced:
@@ -82,7 +82,8 @@ def new_mine():
         block['index'], block['proof'], len(block['transactions']))
 
     print(response)
-    threading.Timer(5, new_mine).start()
+    # threading.Timer(5, new_mine).start()
+    threading.Timer(20, new_mine).start()
 
 
 @ app.route('/nodes/register', methods=['POST'])
@@ -111,6 +112,7 @@ def new_tran():
     # declare global variable
     global img_tmp
     global cnt
+    global blockchain
 
     test = catchCam()
 
@@ -118,8 +120,10 @@ def new_tran():
     b64 = base64.b64encode(pickle.dumps(test))
     b64 = b64.decode('utf-8')
 
+    # jsonObj = json.dumps(
+    #     {'snapshot': b64, 'timestamp': str(datetime.datetime.now())}, ensure_ascii=False)
     jsonObj = json.dumps(
-        {'snapshot': b64, 'timestamp': str(datetime.datetime.now())}, ensure_ascii=False)
+        {'snapshot': 1, 'timestamp': str(datetime.datetime.now())}, ensure_ascii=False)
     jsonObj = json.loads(jsonObj)
     filename = 'test{0}.jpg'.format(cnt)
     with open(filename, 'wb') as f:
@@ -144,6 +148,9 @@ def new_tran():
     #     jsonObj['location'], jsonObj['name'], jsonObj['phone'])
     index = blockchain.new_transaction(
         jsonObj['snapshot'], jsonObj['timestamp'])
+    print('트랜잭션 생성 완료')
+    print(blockchain.current_transactions)
+    threading.Timer(5, new_tran).start()
 
 
 def runbot(cnt):
@@ -236,8 +243,12 @@ if __name__ == '__main__':
 
     p1 = Process(target=new_mine)
     p2 = Process(target=catchCam)
+    p3 = Process(target=new_tran)
 
     new_mine()
-    p2.start()
+    # p1.start()
+    # p2.start()
+    p3.start()
+
     app.run(host='0.0.0.0', port=port, debug=True,
             use_reloader=False, threaded=True)
