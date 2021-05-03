@@ -63,7 +63,7 @@ def full_chain():
 
 
 def new_mine():
-    threading.Timer(5, new_tran).start()
+    # threading.Timer(5, new_tran).start()
     replaced = blockchain.resolve_conflicts()
 
     if replaced:
@@ -241,14 +241,17 @@ if __name__ == '__main__':
     args = parser.parse_args()
     port = args.port
 
-    p1 = Process(target=new_mine)
-    p2 = Process(target=catchCam)
-    p3 = Process(target=new_tran)
+    # p1 = Process(target=new_mine)
+    # p2 = Process(target=catchCam)
+    # p3 = Process(target=new_tran)
+
+    # # new_mine()
+    # threading.Timer(p1, 5).start()
+    # # p2.start()
+    # p3.start()
 
     new_mine()
-    # p1.start()
-    # p2.start()
-    p3.start()
+    new_tran()
 
     app.run(host='0.0.0.0', port=port, debug=True,
             use_reloader=False, threaded=True)
