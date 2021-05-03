@@ -63,7 +63,6 @@ def full_chain():
 
 
 def new_mine():
-    # threading.Timer(5, new_tran).start()
     replaced = blockchain.resolve_conflicts()
 
     if replaced:
@@ -123,7 +122,7 @@ def new_tran():
     # jsonObj = json.dumps(
     #     {'snapshot': b64, 'timestamp': str(datetime.datetime.now())}, ensure_ascii=False)
     jsonObj = json.dumps(
-        {'snapshot': 1, 'timestamp': str(datetime.datetime.now())}, ensure_ascii=False)
+        {'snapshot': b64, 'timestamp': str(datetime.datetime.now())}, ensure_ascii=False)
     jsonObj = json.loads(jsonObj)
     filename = 'test{0}.jpg'.format(cnt)
     with open(filename, 'wb') as f:
@@ -148,30 +147,45 @@ def new_tran():
     #     jsonObj['location'], jsonObj['name'], jsonObj['phone'])
     index = blockchain.new_transaction(
         jsonObj['snapshot'], jsonObj['timestamp'])
-    print('트랜잭션 생성 완료')
-    print(blockchain.current_transactions)
+    # print('트랜잭션 생성 완료')
+    # print(blockchain.current_transactions)
     threading.Timer(5, new_tran).start()
 
 
+imgCnt = 0
+
+
 def runbot(cnt):
-    convImg = blockchain.chain[cnt]['transactions'][0]['img'].encode('utf-8')
-    convtImg = pickle.loads(base64.b64decode(
-        convImg))
-    converted_img = Image.fromarray(convtImg, 'RGB')
+    global imgCnt
+    # 1. blockchain.chain[cnt]의 길이를 가져온다
+    # 2. 가져온 길이만큼 돌면서 이미지를 전송한다
+    # 3. imgCnt ++
+    # 4. 만약 imgCnt가 10을 넘어가면 브레이크
+    chainLength = len(blockchain.chain[cnt]['transactions'])
+    for i in range(chainLength-1):
+        print(i)
+        if imgCnt > 9:
+            break
+        else:
+            convImg = blockchain.chain[cnt]['transactions'][i]['img'].encode(
+                'utf-8')
+            convtImg = pickle.loads(base64.b64decode(
+                convImg))
+            converted_img = Image.fromarray(convtImg, 'RGB')
 
-    bio = BytesIO()
-    bio.name = str(uuid.uuid4())
-    converted_img.save(bio, 'JPEG')
-    bio.seek(0)
+            bio = BytesIO()
+            bio.name = str(uuid.uuid4())
+            converted_img.save(bio, 'JPEG')
+            bio.seek(0)
 
-    bot.sendPhoto(
-        chat_id=chat_id, photo=bio)
+            bot.sendPhoto(
+                chat_id=chat_id, photo=bio)
+            imgCnt = imgCnt + 1
 
 
 # 개수 받아서 그만큼 보내기
 
 def step1(update, context):
-    cnt = int(context.args[0])
     msg = "입력한 개수 : " + context.args[0]
     bot.sendMessage(chat_id=chat_id, text=msg)
     # -1부터 거꾸로 가기
@@ -196,6 +210,8 @@ def step1(update, context):
 
 
 def getcnt(update, context):
+    global imgCnt
+    imgCnt = 0
     # parse time from args
     time1 = context.args[0] + ' ' + context.args[1]
     time2 = context.args[3] + ' ' + context.args[4]
@@ -205,7 +221,7 @@ def getcnt(update, context):
                       time1 and x['timestamp'] < time2, blockchain.chain))
 
     arrIndex = []
-    print('arr length : ', len(arr))
+    # print('arr length : ', len(arr))
     for i in arr:
         if len(arrIndex) >= 10:
             break
@@ -245,9 +261,9 @@ if __name__ == '__main__':
     # p2 = Process(target=catchCam)
     # p3 = Process(target=new_tran)
 
-    # # new_mine()
-    # threading.Timer(p1, 5).start()
-    # # p2.start()
+    # new_mine()
+    # p1.start()
+    # # # p2.start()
     # p3.start()
 
     new_mine()
