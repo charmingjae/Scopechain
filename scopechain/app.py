@@ -122,7 +122,7 @@ def new_tran():
     # jsonObj = json.dumps(
     #     {'snapshot': b64, 'timestamp': str(datetime.datetime.now())}, ensure_ascii=False)
     jsonObj = json.dumps(
-        {'snapshot': b64, 'timestamp': str(datetime.datetime.now())}, ensure_ascii=False)
+        {'snapshot': 1, 'timestamp': str(datetime.datetime.now())}, ensure_ascii=False)
     jsonObj = json.loads(jsonObj)
     filename = 'test{0}.jpg'.format(cnt)
     with open(filename, 'wb') as f:
@@ -148,7 +148,7 @@ def new_tran():
     index = blockchain.new_transaction(
         jsonObj['snapshot'], jsonObj['timestamp'])
     # print('트랜잭션 생성 완료')
-    # print(blockchain.current_transactions)
+    print(blockchain.current_transactions)
     threading.Timer(5, new_tran).start()
 
 
@@ -194,19 +194,6 @@ def step1(update, context):
 
     # 입력한 개수 만큼 보내기
     # 현재 체인 길이와 입력 개수 비교해서 체인의 길이가 더 길면 그만큼 보내고.. 아니면 체인의 길이만큼 보내기
-
-
-# def getcnt(update, context):
-#     # parse time from args
-#     time1 = context.args[0] + ' ' + context.args[1]
-#     time2 = context.args[3] + ' ' + context.args[4]
-
-#     # print blockchain length
-#     arr = list(filter(lambda x: x['timestamp'] >
-#                       time1 and x['timestamp'] < time2, blockchain.chain))
-
-#     for i in arr:
-#         runbot(i['index'])
 
 
 def getcnt(update, context):
@@ -257,17 +244,20 @@ if __name__ == '__main__':
     args = parser.parse_args()
     port = args.port
 
-    # p1 = Process(target=new_mine)
+    p1 = Process(target=new_mine, args=blockchain.current_transactions)
     # p2 = Process(target=catchCam)
-    # p3 = Process(target=new_tran)
+    p3 = Process(target=new_tran, args=blockchain.current_transactions)
 
     # new_mine()
-    # p1.start()
-    # # # p2.start()
-    # p3.start()
+    p1.start()
+    # p2.start()
+    p3.start()
 
-    new_mine()
-    new_tran()
+    p1.join()
+    p3.join()
+
+    # new_mine()
+    # new_tran()
 
     app.run(host='0.0.0.0', port=port, debug=True,
             use_reloader=False, threaded=True)
