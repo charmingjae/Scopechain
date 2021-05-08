@@ -22,6 +22,7 @@ import datetime
 
 app = Flask(__name__)
 
+
 # Module :: Snapshot cam display
 capture = cv2.VideoCapture(0)
 capture.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
@@ -48,7 +49,7 @@ def catchCam():
 
 # Generate a globally unique address for this node
 node_identifier = str(uuid4()).replace('-', '')
-# Instantiate the blockchain
+# # Instantiate the blockchain
 blockchain = Blockchain()
 
 
@@ -63,6 +64,7 @@ def full_chain():
 
 
 def new_mine():
+    global blockchain
     replaced = blockchain.resolve_conflicts()
 
     if replaced:
@@ -225,6 +227,7 @@ def index():
 
 
 if __name__ == '__main__':
+
     updater = Updater(token=token, use_context=True)
 
     dispatcher = updater.dispatcher
