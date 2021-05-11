@@ -1,3 +1,4 @@
+import multiprocessing
 from telegram.ext import Updater
 from telegram.ext import CommandHandler
 from flask import Flask, request, render_template, jsonify
@@ -49,8 +50,6 @@ def catchCam():
 
 # Generate a globally unique address for this node
 node_identifier = str(uuid4()).replace('-', '')
-# # Instantiate the blockchain
-blockchain = Blockchain()
 
 
 @ app.route('/chain', methods=['GET'])
@@ -63,8 +62,7 @@ def full_chain():
     return jsonify(response), 200
 
 
-def new_mine():
-    global blockchain
+def new_mine(blockchain):
     replaced = blockchain.resolve_conflicts()
 
     if replaced:
@@ -84,7 +82,7 @@ def new_mine():
 
     print(response)
     # threading.Timer(5, new_mine).start()
-    threading.Timer(20, new_mine).start()
+    threading.Timer(20, new_mine, args=(blockchain,)).start()
 
 
 @ app.route('/nodes/register', methods=['POST'])
@@ -109,11 +107,10 @@ img_tmp = 'a'
 cnt = 1
 
 
-def new_tran():
+def new_tran(blockchain):
     # declare global variable
     global img_tmp
     global cnt
-    global blockchain
 
     test = catchCam()
 
@@ -151,7 +148,7 @@ def new_tran():
         jsonObj['snapshot'], jsonObj['timestamp'])
     # print('트랜잭션 생성 완료')
     print(blockchain.current_transactions)
-    threading.Timer(5, new_tran).start()
+    threading.Timer(5, new_tran, args=(blockchain,)).start()
 
 
 imgCnt = 0
@@ -228,6 +225,9 @@ def index():
 
 if __name__ == '__main__':
 
+    # # Instantiate the blockchain
+    blockchain = Blockchain()
+
     updater = Updater(token=token, use_context=True)
 
     dispatcher = updater.dispatcher
@@ -247,20 +247,19 @@ if __name__ == '__main__':
     args = parser.parse_args()
     port = args.port
 
-    p1 = Process(target=new_mine, args=blockchain.current_transactions)
+    p1 = Process(target=new_mine, args=(blockchain,))
     # p2 = Process(target=catchCam)
-    p3 = Process(target=new_tran, args=blockchain.current_transactions)
+    p3 = Process(target=new_tran, args=(blockchain,))
 
     # new_mine()
     p1.start()
     # p2.start()
     p3.start()
 
-    p1.join()
-    p3.join()
-
     # new_mine()
     # new_tran()
+    p1.join()
+    p3.join()
 
     app.run(host='0.0.0.0', port=port, debug=True,
             use_reloader=False, threaded=True)
