@@ -79,7 +79,7 @@ def new_mine():
     previous_hash = blockchain.hash(last_block)
     block = blockchain.new_block(proof, previous_hash)
 
-    response = '''[ NOTICE ] %s번째 블록이 생성되었습니다. | proof=%s | transaction Length=%s |''' % (
+    response = '''\n[ NOTICE ] %s번째 블록이 생성되었습니다. | proof=%s | transaction Length=%s |''' % (
         block['index'], block['proof'], len(block['transactions']))
 
     print(response)
@@ -152,7 +152,7 @@ def new_tran():
         jsonObj['snapshot'], jsonObj['timestamp'])
     # print('트랜잭션 생성 완료')
     # print(blockchain.current_transactions)
-    threading.Timer(2, new_tran).start()
+    threading.Timer(5, new_tran).start()
 
 
 imgCnt = 0
