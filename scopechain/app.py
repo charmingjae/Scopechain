@@ -20,6 +20,7 @@ from PIL import Image
 import numpy as np
 import pickle
 import datetime
+import time
 
 app = Flask(__name__)
 
@@ -62,7 +63,8 @@ def full_chain():
     return jsonify(response), 200
 
 
-def new_mine(blockchain):
+def new_mine():
+    start_time = time.time()
     replaced = blockchain.resolve_conflicts()
 
     if replaced:
@@ -81,8 +83,10 @@ def new_mine(blockchain):
         block['index'], block['proof'], len(block['transactions']))
 
     print(response)
+    end_time = time.time()
+    print("걸린 시간 : {} sec".format(end_time-start_time))
     # threading.Timer(5, new_mine).start()
-    threading.Timer(20, new_mine, args=(blockchain,)).start()
+    threading.Timer(20, new_mine).start()
 
 
 @ app.route('/nodes/register', methods=['POST'])
@@ -107,7 +111,7 @@ img_tmp = 'a'
 cnt = 1
 
 
-def new_tran(blockchain):
+def new_tran():
     # declare global variable
     global img_tmp
     global cnt
@@ -121,7 +125,7 @@ def new_tran(blockchain):
     # jsonObj = json.dumps(
     #     {'snapshot': b64, 'timestamp': str(datetime.datetime.now())}, ensure_ascii=False)
     jsonObj = json.dumps(
-        {'snapshot': 1, 'timestamp': str(datetime.datetime.now())}, ensure_ascii=False)
+        {'snapshot': b64, 'timestamp': str(datetime.datetime.now())}, ensure_ascii=False)
     jsonObj = json.loads(jsonObj)
     filename = 'test{0}.jpg'.format(cnt)
     with open(filename, 'wb') as f:
@@ -147,8 +151,8 @@ def new_tran(blockchain):
     index = blockchain.new_transaction(
         jsonObj['snapshot'], jsonObj['timestamp'])
     # print('트랜잭션 생성 완료')
-    print(blockchain.current_transactions)
-    threading.Timer(5, new_tran, args=(blockchain,)).start()
+    # print(blockchain.current_transactions)
+    threading.Timer(2, new_tran).start()
 
 
 imgCnt = 0
@@ -247,19 +251,19 @@ if __name__ == '__main__':
     args = parser.parse_args()
     port = args.port
 
-    p1 = Process(target=new_mine, args=(blockchain,))
+    # p1 = Process(target=new_mine, args=(blockchain,))
     # p2 = Process(target=catchCam)
-    p3 = Process(target=new_tran, args=(blockchain,))
+    # p3 = Process(target=new_tran, args=(blockchain,))
 
     # new_mine()
-    p1.start()
+    # p1.start()
     # p2.start()
-    p3.start()
+    # p3.start()
 
-    # new_mine()
-    # new_tran()
-    p1.join()
-    p3.join()
+    new_mine()
+    new_tran()
+    # p1.join()
+    # p3.join()
 
     app.run(host='0.0.0.0', port=port, debug=True,
             use_reloader=False, threaded=True)
