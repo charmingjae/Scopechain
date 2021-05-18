@@ -1,7 +1,7 @@
-# import time
-# import multiprocessing
-# # from threading import Thread
-# import threading
+import time
+import multiprocessing
+# from threading import Thread
+import threading
 
 
 # start_time = time.time()
@@ -44,18 +44,39 @@
 #     print('th2 is not alive')
 #     flag = True
 
-flags = True
+import time
+import math
+import sys
 
 
-def out():
+def fun1():
+    print('[fun1]')
+    print('[fun1]')
+    print('[fun1]')
+    print('[fun1]')
+    print('[fun1]')
+    print('[fun1]')
+    time.sleep(5)
 
-    def inner():
-        global flags
-        print('inner : ', flags)
-        flags = False
 
-    inner()
-    print('out : ', flags)
+def fun2():
+    for i in range(1, 10):
+        print('[fun2]')
+        time.sleep(1)
 
 
-out()
+def fun3():
+    for i in range(1, 10):
+        print('[fun3]')
+        time.sleep(1)
+
+
+th1 = threading.Thread(target=fun1)
+th2 = threading.Thread(target=fun2)
+th3 = threading.Thread(target=fun3)
+
+th1.start()
+
+th1.join()
+th2.start()
+th3.start()
