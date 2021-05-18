@@ -63,7 +63,13 @@ def full_chain():
     return jsonify(response), 200
 
 
+mine_cnt = 1
+
+
 def new_mine():
+    global mine_cnt
+    if mine_cnt > 100:
+        return
     start_time = time.time()
     replaced = blockchain.resolve_conflicts()
 
@@ -85,8 +91,9 @@ def new_mine():
     print(response)
     end_time = time.time()
     print("걸린 시간 : {} sec".format(end_time-start_time))
+    mine_cnt += 1
     # threading.Timer(5, new_mine).start()
-    threading.Timer(20, new_mine).start()
+    threading.Timer(0, new_mine).start()
 
 
 @ app.route('/nodes/register', methods=['POST'])
@@ -152,7 +159,7 @@ def new_tran():
         jsonObj['snapshot'], jsonObj['timestamp'])
     # print('트랜잭션 생성 완료')
     # print(blockchain.current_transactions)
-    threading.Timer(5, new_tran).start()
+    threading.Timer(0, new_tran).start()
 
 
 imgCnt = 0

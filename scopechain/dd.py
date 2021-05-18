@@ -1,43 +1,61 @@
-import time
-import concurrent.futures
+# import time
+# import multiprocessing
+# # from threading import Thread
+# import threading
 
 
-def fun1():
-    for i in range(1, 10):
-        print('[func1] : ', i)
-        time.sleep(1)
+# start_time = time.time()
+# flag = False
+
+# arr = []
 
 
-def fun2():
-    for i in range(11, 20):
-        print('[fun2] : ', i)
-        if i == 15:
-            break
-        time.sleep(1)
+# def fun1():
+#     global flag
+#     for i in range(10):
+#         if flag:
+#             break
+#         print('[fun1] : ', i)
+#         arr.append(i)
+#         print('[fun1 now arr] : ', arr)
+#         time.sleep(1)
+#     print('[fun1 process is finished]')
 
 
-with concurrent.futures.ThreadPoolExecutor() as executor:
-    future1 = executor.submit(fun1)
-    future2 = executor.submit(fun2)
+# def fun2():
+#     for i in range(4):
+#         print('[fun2] : ', i)
+#         arr.append(i)
+#         print('[fun2 now arr] : ', arr)
+#         time.sleep(1)
+#     print('[fun2 process is finished]')
 
-    flag = 0
-    # while (not(future1.done()) and not(future2.done())):
-    while True:
-        if future1.done():
-            print('future1 done')
-            flag = 1
-            break
 
-        if future2.done():
-            print('future2 done')
-            flag = 2
-            break
+# th1 = threading.Thread(target=fun1)
+# th2 = threading.Thread(target=fun2)
 
-    print('NOW FLAG : ', flag)
-    if flag == 1:
-        future2.cancel()
+# th1.start()
+# th2.start()
 
-    elif flag == 2:
-        # ??
-        result = future1
-        print('cancel result : ', result)
+# # th1.join()
+# th2.join()
+
+# if not th2.is_alive():
+#     print('th2 is not alive')
+#     flag = True
+
+flags = True
+
+
+def out():
+
+    def inner():
+        global flags
+        print('inner : ', flags)
+        flags = False
+
+    inner()
+    print('out : ', flags)
+
+
+out()

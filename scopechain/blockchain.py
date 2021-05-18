@@ -2,13 +2,18 @@ import hashlib
 import json
 from multiprocessing.context import Process
 import threading
+import time
 from urllib.parse import urlparse
 import requests
 import datetime
 import concurrent.futures
 
-
+flags = False
+proof_Result = None
+time_cnt = 0
 # Block chain
+
+
 class Blockchain:
     def __init__(self):
         self.current_transactions = []
@@ -154,6 +159,12 @@ class Blockchain:
         return hashlib.sha256(block_string).hexdigest()
 
     def proof_of_work(self, last_block):
+        start_time = time.time()
+        global flags
+        global proof_Result
+        global time_cnt
+        flags = False
+        proof_Result = None
         """
         Simple Proof of Work Algorithm:
          - Find a number p' such that hash(pp') contains leading 4 zeroes
@@ -166,66 +177,85 @@ class Blockchain:
         last_proof = last_block['proof']
         last_hash = self.hash(last_block)
 
-        # proof = 0
-        # while self.valid_proof(last_proof, proof, last_hash) is False:
-        #     proof += 1
-        # return proof
+        proof = 0
+        while self.valid_proof(last_proof, proof, last_hash) is False:
+            proof += 1
 
-        # proof = 0
+        end_time = time.time()
+        print("프루프 걸린 시간 : {} sec".format(end_time-start_time))
+        time_cnt += end_time-start_time
+        print('현재까지 걸린 시간 : ', time_cnt)
+        return proof
 
-        proof1 = 0
-        proof2 = 50001
+        # proof1 = 0
+        # proof2 = 50001
 
-        def thread1(proof):
-            for i in range(0, 50000):
-                if self.valid_proof(last_proof, proof, last_hash) is True:
-                    print('thread1에서 찾음! proof : ', proof)
-                    return proof
-                proof += 1
+        # def fun1(last_proof, proof, last_hash, start, finish):
+        #     global proof_Result
+        #     global flags
+        #     print('fun1 now flags :', flags)
+        #     for i in range(start, finish):
+        #         if self.valid_proof(last_proof, proof, last_hash) is True:
+        #             flags = True
+        #             proof_Result = proof
+        #             print('[fun1 is finished] proof : ', proof_Result)
+        #             break
+        #         if flags:
+        #             break
+        #         proof += 1
 
-        def thread2(proof):
-            for i in range(50001, 100000):
-                if self.valid_proof(last_proof, proof, last_hash) is True:
-                    print('thread2에서 찾음! proof : ', proof)
-                    return proof
-                proof += 1
+        # # def fun2(last_proof, proof, last_hash):
+        # #     global proof_Result
+        # #     global flags
+        # #     print('fun2 now flags :', flags)
+        # #     for i in range(50001, 100001):
+        # #         if self.valid_proof(last_proof, proof, last_hash) is True:
+        # #             flags = True
+        # #             proof_Result = proof
+        # #             print('[fun2 is finished] proof : ', proof_Result)
+        # #             break
+        # #         if flags:
+        # #             break
+        # #         proof += 1
 
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            future1 = executor.submit(thread1, proof1)
-            future2 = executor.submit(thread2, proof2)
+        # th1 = threading.Thread(target=fun1, args=(
+        #     last_proof, proof1, last_hash, 1, 50001))
+        # th2 = threading.Thread(target=fun1, args=(
+        #     last_proof, proof2, last_hash, 50001, 100001))
 
-            # while (not(future1.done()) and not(future2.done())):
-            while True:
-                if future1.done():
-                    if future2.done():
-                        print('future2 is already done')
-                    cancelresult = future2.cancel()
-                    print('future2 cancel result : ', cancelresult)
-                    return_value = future1.result()
-                    print('thread1 return value : ', return_value)
-                    proof = return_value
-                    return proof
+        # th1.start()
+        # th2.start()
 
-                if future2.done():
-                    if future1.done():
-                        print('future1 is already done')
-                    cancelresult = future1.cancel()
-                    print('future1 cancel result : ', cancelresult)
-                    return_value = future2.result()
-                    print('thread2 return value : ', return_value)
-                    proof = return_value
-                    return proof
+        # th1.join()
+        # th2.join()
+
+        # # if not th2.is_alive():
+        # #     print('th2 is not alive')
+        # #     print('flag : ', flags)
+        # #     print('proof : ', proof_Result)
+
+        # # if not th1.is_alive():
+        # #     print('th1 is not alive')
+        # #     print('flag : ', flags)
+        # #     print('proof : ', proof_Result)
+
+        # end_time = time.time()
+        print('proof result : {}'.format(proof_Result))
+        print("프루프 걸린 시간 : {} sec".format(end_time-start_time))
+        time_cnt += end_time-start_time
+        print('현재까지 걸린 시간 : ', time_cnt)
+        return proof_Result
 
     @ staticmethod
     def valid_proof(last_proof, proof, last_hash):
         """
-        Validates the Proof
-        :param last_proof: <int> Previous Proof
-        :param proof: <int> Current Proof
-        :param last_hash: <str> The hash of the Previous Block
-        :return: <bool> True if correct, False if not.
-        """
+            Validates the Proof
+            :param last_proof: <int> Previous Proof
+            :param proof: <int> Current Proof
+            :param last_hash: <str> The hash of the Previous Block
+            :return: <bool> True if correct, False if not.
+            """
 
         guess = f'{last_proof}{proof}{last_hash}'.encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
-        return guess_hash[:4] == "0000"
+        return guess_hash[: 4] == "0000"
