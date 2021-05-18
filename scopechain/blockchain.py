@@ -175,15 +175,6 @@ class Blockchain:
 
         proof1 = 0
         proof2 = 50001
-        # proof3 = 50001
-        # proof4 = 75001
-        # proof5 = 100001
-        # proof6 = 125001
-        # proof7 = 150001
-        # proof8 = 175001
-        # proof9 = 200001
-        # proof10 = 225001
-        # proof11 = 250001
 
         def thread1(proof):
             for i in range(0, 50000):
@@ -199,115 +190,31 @@ class Blockchain:
                     return proof
                 proof += 1
 
-        # def thread3(proof):
-        #     for i in range(50001, 75000):
-        #         if self.valid_proof(last_proof, proof, last_hash) is True:
-        #             print('thread3에서 찾음! proof : ', proof)
-        #             return proof
-        #         proof += 1
-
-        # def thread4(proof):
-        #     for i in range(75001, 100000):
-        #         if self.valid_proof(last_proof, proof, last_hash) is True:
-        #             print('thread4에서 찾음! proof : ', proof)
-        #             return proof
-        #         proof += 1
-
-        # def thread5(proof):
-        #     for i in range(100001, 125000):
-        #         if self.valid_proof(last_proof, proof, last_hash) is True:
-        #             print('thread5에서 찾음! proof : ', proof)
-        #             return proof
-        #         proof += 1
-
-        # def thread6(proof):
-        #     for i in range(125001, 150000):
-        #         if self.valid_proof(last_proof, proof, last_hash) is True:
-        #             print('thread6에서 찾음! proof : ', proof)
-        #             return proof
-        #         proof += 1
-
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future1 = executor.submit(thread1, proof1)
             future2 = executor.submit(thread2, proof2)
-        #     future3 = executor.submit(thread3, proof3)
-        #     future4 = executor.submit(thread4, proof4)
-        #     future5 = executor.submit(thread5, proof5)
-        #     future6 = executor.submit(thread6, proof6)
 
-        #     proof = 0
-
-            while (not(future1.done() and future2.done())):
-                #         return_value = None
-
+            # while (not(future1.done()) and not(future2.done())):
+            while True:
                 if future1.done():
-                    future2.cancel()
-                #             future3.cancel()
-                #             future4.cancel()
-                #             future5.cancel()
-                #             future6.cancel()
+                    if future2.done():
+                        print('future2 is already done')
+                    cancelresult = future2.cancel()
+                    print('future2 cancel result : ', cancelresult)
                     return_value = future1.result()
                     print('thread1 return value : ', return_value)
                     proof = return_value
                     return proof
 
                 if future2.done():
-                    future1.cancel()
-                #             future3.cancel()
-                #             future4.cancel()
-                #             future5.cancel()
-                #             future6.cancel()
+                    if future1.done():
+                        print('future1 is already done')
+                    cancelresult = future1.cancel()
+                    print('future1 cancel result : ', cancelresult)
                     return_value = future2.result()
                     print('thread2 return value : ', return_value)
                     proof = return_value
                     return proof
-
-                #         if future3.done():
-                #             future1.cancel()
-                #             future2.cancel()
-                #             future4.cancel()
-                #             future5.cancel()
-                #             future6.cancel()
-                #             return_value = future3.result()
-                #             print('thread3 return value : ', return_value)
-                #             proof = return_value
-                #             return proof
-
-                #         if future4.done():
-                #             future1.cancel()
-                #             future2.cancel()
-                #             future3.cancel()
-                #             future5.cancel()
-                #             future6.cancel()
-                #             return_value = future4.result()
-                #             print('thread4 return value : ', return_value)
-                #             proof = return_value
-                #             return proof
-
-                #         if future5.done():
-                #             future1.cancel()
-                #             future2.cancel()
-                #             future3.cancel()
-                #             future4.cancel()
-                #             future6.cancel()
-                #             return_value = future5.result()
-                #             print('thread5 return value : ', return_value)
-                #             proof = return_value
-                #             return proof
-
-                #         if future6.done():
-                #             future1.cancel()
-                #             future2.cancel()
-                #             future3.cancel()
-                #             future4.cancel()
-                #             future5.cancel()
-                #             return_value = future6.result()
-                #             print('thread6 return value : ', return_value)
-                #             proof = return_value
-                #             return proof
-
-                #     # proof = return_value1
-                # # return proof
 
     @ staticmethod
     def valid_proof(last_proof, proof, last_hash):
