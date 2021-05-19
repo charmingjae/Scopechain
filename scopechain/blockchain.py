@@ -200,7 +200,7 @@ class Blockchain:
             # print('fun{0} now flags : {1}'.format(idx, flags))
             for i in range(start, finish):
                 if i == (finish-1):
-                    print('equals')
+                    print('{0} block is finished'.format(idx))
                 if flags:
                     break
                 if self.valid_proof(last_proof, proof, last_hash) is True:
@@ -221,7 +221,6 @@ class Blockchain:
         th2.start()
 
         th1.join()
-        th2.join()
 
         # if not th2.is_alive():
         #     print('th2 is not alive')
