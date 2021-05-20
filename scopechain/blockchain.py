@@ -191,7 +191,9 @@ class Blockchain:
         # return proof
 
         proof1 = 0
-        proof2 = 150001
+        proof2 = 75001
+        proof3 = 150001
+        proof4 = 225001
 
         def fun1(last_proof, proof, last_hash, start, finish, idx):
             global proof_Result
@@ -213,14 +215,23 @@ class Blockchain:
                 proof += 1
 
         th1 = threading.Thread(target=fun1, args=(
-            last_proof, proof1, last_hash, 0, 150001, 1))
+            last_proof, proof1, last_hash, 0, 75001, 1))
         th2 = threading.Thread(target=fun1, args=(
-            last_proof, proof2, last_hash, 150001, 300001, 2))
+            last_proof, proof2, last_hash, 75001, 150001, 2))
+        th3 = threading.Thread(target=fun1, args=(
+            last_proof, proof3, last_hash, 150001, 225001, 3))
+        th4 = threading.Thread(target=fun1, args=(
+            last_proof, proof3, last_hash, 225001, 300000, 4))
 
         th1.start()
         th2.start()
+        th3.start()
+        th4.start()
 
         th1.join()
+        th2.join()
+        th3.join()
+        th4.join()
 
         # if not th2.is_alive():
         #     print('th2 is not alive')
@@ -238,8 +249,7 @@ class Blockchain:
         time_cnt += end_time-start_time
         print('현재까지 걸린 시간 : ', time_cnt)
         print('평균시간 : ', time_cnt/100)
-        print('범위 별 정보 : ', arr)
-        print('None : ', 100 - sum(arr))
+        print('범위 별 정보 : {0} \t None : {1}'.format(arr, 100-sum(arr)))
 
         return proof_Result
 
