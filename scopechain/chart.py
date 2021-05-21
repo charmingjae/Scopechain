@@ -14,9 +14,14 @@ simul3 = [0.39, 0.41, 0.39, 0.45, 0.38, 0.38, 0.37, 0.46, 0.45, 0.34]
 # use 7 threads with no join
 simul4 = [0.29, 0.33, 0.31, 0.31, 0.31, 0.32, 0.29, 0.31, 0.34, 0.25]
 
+# use 7 threads with join
+
+simul5 = [0.34, 0.38, 0.36, 0.38, 0.33, 0.33, 0.37, 0.36, 0.35, 0.35]
+
 plt.plot(cycle, simul1)
 plt.plot(cycle, simul2)
 plt.plot(cycle, simul3)
 plt.plot(cycle, simul4)
+plt.plot(cycle, simul5)
 
 plt.show()
