@@ -191,7 +191,7 @@ class Blockchain:
         # return proof
 
         proof1 = 0
-        proof2 = 150001
+        proof2 = 50001
         proof3 = 100001
         proof4 = 150001
         proof5 = 200001
@@ -216,36 +216,36 @@ class Blockchain:
                 proof += 1
 
         th1 = threading.Thread(target=fun1, args=(
-            last_proof, proof1, last_hash, 0, 150001, 1))
+            last_proof, proof1, last_hash, 0, 50001, 1))
 
         th2 = threading.Thread(target=fun1, args=(
-            last_proof, proof2, last_hash, 150001, sys.maxsize, 2))
+            last_proof, proof2, last_hash, 50001, 100001, 2))
 
-        # th3 = threading.Thread(target=fun1, args=(
-        #     last_proof, proof3, last_hash, 100001, 150001, 3))
+        th3 = threading.Thread(target=fun1, args=(
+            last_proof, proof3, last_hash, 100001, 150001, 3))
 
-        # th4 = threading.Thread(target=fun1, args=(
-        #     last_proof, proof4, last_hash, 150001, 200001, 4))
+        th4 = threading.Thread(target=fun1, args=(
+            last_proof, proof4, last_hash, 150001, 200001, 4))
 
-        # th5 = threading.Thread(target=fun1, args=(
-        #     last_proof, proof5, last_hash, 200001, 250001, 5))
+        th5 = threading.Thread(target=fun1, args=(
+            last_proof, proof5, last_hash, 200001, 250001, 5))
 
-        # th6 = threading.Thread(target=fun1, args=(
-        #     last_proof, proof6, last_hash, 250001, 300001, 6))
+        th6 = threading.Thread(target=fun1, args=(
+            last_proof, proof6, last_hash, 250001, 300001, 6))
 
-        # th7 = threading.Thread(target=fun1, args=(
-        #     last_proof, proof7, last_hash, 300001, sys.maxsize, 7))
+        th7 = threading.Thread(target=fun1, args=(
+            last_proof, proof7, last_hash, 300001, sys.maxsize, 7))
 
         th1.start()
         th2.start()
-        # th3.start()
-        # th4.start()
-        # th5.start()
-        # th6.start()
-        # th7.start()
+        th3.start()
+        th4.start()
+        th5.start()
+        th6.start()
+        th7.start()
 
         if flags is not True:
-            th2.join()
+            th7.join()
 
         end_time = time.time()
         print('proof result : {}'.format(proof_Result))

@@ -4,45 +4,76 @@ import multiprocessing
 import time
 
 
-flags = Value(c_bool, False)
-print(flags)
+# if flags.value is True:
+#     print('True!!!!')
+# else:
+#     print('False!!!')
 
-if flags.value is True:
-    print('True!!!!')
-else:
-    print('False!!!')
 
 # def fun1(flags):
 #     for i in range(1, 11):
-#         if flags.value is True:
-#             break
-#         print('fun1 : ', i)
-#         print('fun1 now flags is : ', flags)
+#         print(i)
 #         if i == 5:
-#             flags = True
-#             print('fun1 now flags is : ', flags)
+#             flags.value = True
+#             print('NOW FLAG : ', flags.value)
 #             break
+#         print('NOW FLAG : ', flags.value)
 #         time.sleep(1)
 
 
 # def fun2(flags):
-#     for i in range(100, 201):
-#         if flags is True:
+#     for i in range(100, 111):
+#         if flags.value is True:
 #             break
-#         print('fun2 : ', i)
-#         print('fun2 now flags is : ', flags)
+#         print(i)
+#         print('NOW FLAG : ', flags.value)
 #         time.sleep(1)
 
+def fun1(flags):
+    for i in range(1, 11):
+        print(i)
+        if i == 5:
+            flags.value = True
+            print('NOW FLAG : ', flags.value)
+            break
+        print('NOW FLAG : ', flags.value)
+        time.sleep(1)
 
-# if __name__ == '__main__':
-#     procs = []
-#     proc1 = Process(target=fun1, args=(flags,))
-#     proc2 = Process(target=fun2, args=(flags,))
 
-#     procs.append(proc1)
-#     proc1.start()
-#     procs.append(proc2)
-#     proc2.start()
+def fun2(flags):
+    for i in range(100, 111):
+        if flags.value is True:
+            break
+        print(i)
+        print('NOW FLAG : ', flags.value)
+        time.sleep(1)
 
-#     for i in procs:
-#         i.join()
+
+def test():
+    flags = Value(c_bool, False)
+
+    p1 = Process(target=fun1, args=(flags,))
+    p2 = Process(target=fun2, args=(flags,))
+
+    p1.start()
+    p2.start()
+
+    p1.join()
+    p2.join()
+
+    print('flags : ', flags.value)
+
+
+if __name__ == '__main__':
+    test()
+
+    # flags = Value(c_bool, False)
+    # print(flags.value)
+    # p1 = Process(target=fun1, args=(flags,))
+    # p2 = Process(target=fun2, args=(flags,))
+
+    # p1.start()
+    # p2.start()
+
+    # p1.join()
+    # p2.join()
