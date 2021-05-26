@@ -160,8 +160,9 @@ class Blockchain:
     def find_proof(self, flags, idx, last_proof, proof, last_hash, proof_result, start, end):
 
         for i in range(start, end):
-            # print('NOW PROOF : ', proof)
+            print('fun{0} now PROOF : {1}'.format(idx, proof))
             if flags.value is True:
+                print('[fun{0}] flags.value is True'.format(idx))
                 break
             if self.valid_proof(last_proof, proof, last_hash) is True:
                 flags.value = True
@@ -191,17 +192,33 @@ class Blockchain:
 
         # Proof
         proof1 = 0
-        proof2 = 150001
+        proof2 = 75001
+        proof3 = 150001
+        proof4 = 225001
+        proof5 = 300001
 
         start_time = time.time()
         p1 = Process(target=self.find_proof, args=(flags, 0,
-                                                   last_proof, proof1, last_hash, proof_result, 0, 150001))
+                                                   last_proof, proof1, last_hash, proof_result, 0, 75001))
         p2 = Process(target=self.find_proof, args=(flags, 1,
-                                                   last_proof, proof2, last_hash, proof_result, 150001, sys.maxsize))
+                                                   last_proof, proof2, last_hash, proof_result, 75001, 150001))
+        p3 = Process(target=self.find_proof, args=(flags, 2,
+                                                   last_proof, proof3, last_hash, proof_result, 150001, 225001))
+        p4 = Process(target=self.find_proof, args=(flags, 3,
+                                                   last_proof, proof4, last_hash, proof_result, 225001, 300001))
+        p5 = Process(target=self.find_proof, args=(flags, 4,
+                                                   last_proof, proof5, last_hash, proof_result, 300001, sys.maxsize))
+
         p1.start()
         p2.start()
+        p3.start()
+        p4.start()
+        p5.start()
         p1.join()
         p2.join()
+        p3.join()
+        p4.join()
+        p5.join()
 
         end_time = time.time()
         print('TIMETIMETIMETIME : ', end_time-start_time)
