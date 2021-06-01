@@ -17,6 +17,8 @@ from ctypes import c_bool, c_int
 time_cnt = 0
 stop_event = Event()
 
+proof_arr = []
+
 
 class Blockchain:
     def __init__(self):
@@ -180,7 +182,7 @@ class Blockchain:
 
     def proof_of_work(self, last_block):
         global time_cnt
-        procs = []
+        # procs = []
         """
             Simple Proof of Work Algorithm:
             - Find a number p' such that hash(pp') contains leading 4 zeroes
@@ -192,47 +194,19 @@ class Blockchain:
 
         last_proof = last_block['proof']
         last_hash = self.hash(last_block)
+        proof = 0
+        while self.valid_proof(last_proof, proof, last_hash) is False:
+            proof += 1
 
-        # Flags
-        flags = Value(c_bool, False)
-        proof_result = Value(c_int, 0)
-
-        # Proof
-        proof1 = 0
-        proof2 = 75001
-        proof3 = 150001
-        proof4 = 225001
-        proof5 = 300001
-
-        start_time = time.time()
-        p1 = Process(target=self.find_proof, args=(flags, 0,
-                                                   last_proof, proof1, last_hash, proof_result, 0, 75001))
-        p2 = Process(target=self.find_proof, args=(flags, 1,
-                                                   last_proof, proof2, last_hash, proof_result, 75001, 150001))
-        p3 = Process(target=self.find_proof, args=(flags, 2,
-                                                   last_proof, proof3, last_hash, proof_result, 150001, 225001))
-        p4 = Process(target=self.find_proof, args=(flags, 3,
-                                                   last_proof, proof4, last_hash, proof_result, 225001, 300001))
-        p5 = Process(target=self.find_proof, args=(flags, 4,
-                                                   last_proof, proof5, last_hash, proof_result, 300001, sys.maxsize))
-
-        p1.start()
-        p2.start()
-        p3.start()
-        p4.start()
-        p5.start()
-
-        p5.join()
-
-        end_time = time.time()
-        stop_event.set()
-        print(' : ', end_time-start_time)
-
-        time_cnt += end_time-start_time
-        print('proof_result : ', proof_result.value)
-        print('avg result : ', time_cnt/100)
-
-        return proof_result.value
+        proof_arr.append(proof)
+        # end_time = time.time()
+        # print("프루프 걸린 시간 : {} sec".format(end_time-start_time))
+        # time_cnt += end_time-start_time
+        # print('현재까지 걸린 시간 : ', time_cnt)
+        # print('평균시간 : ', time_cnt/100)
+        print(proof_arr)
+        print('length : ', len(proof_arr))
+        return proof
 
     @ staticmethod
     def valid_proof(last_proof, proof, last_hash):

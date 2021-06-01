@@ -35,5 +35,5 @@ def fun1(flags, idx, start, end):
 def test():
     flags = Value(c_bool, False)
 
-    pool = multiprocessing.Pool(processes=2)
+    pool = multiprocessing.Pool(processes=1)
     pool.map(fun1, flags)
