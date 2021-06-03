@@ -191,16 +191,18 @@ class Blockchain:
         # return proof
 
         proof1 = 0
-        proof2 = 30001
-        proof3 = 60001
-        proof4 = 90001
-        proof5 = 120001
-        proof6 = 150001
-        proof7 = 180001
-        proof8 = 210001
-        proof9 = 240001
-        proof10 = 270001
-        proof11 = 300001
+        proof2 = 25001
+        proof3 = 50001
+        proof4 = 75001
+        proof5 = 100001
+        proof6 = 125001
+        proof7 = 150001
+        proof8 = 175001
+        proof9 = 200001
+        proof10 = 225001
+        proof11 = 250001
+        proof12 = 275001
+        proof13 = 300001
 
         def fun1(last_proof, proof, last_hash, start, finish, idx):
             global proof_Result
@@ -220,37 +222,43 @@ class Blockchain:
                 proof += 1
 
         th1 = threading.Thread(target=fun1, args=(
-            last_proof, proof1, last_hash, 0, 37501, 1))
+            last_proof, proof1, last_hash, 0, 25001, 1))
 
         th2 = threading.Thread(target=fun1, args=(
-            last_proof, proof2, last_hash, 37501, 75001, 2))
+            last_proof, proof2, last_hash, 25001, 50001, 2))
 
         th3 = threading.Thread(target=fun1, args=(
-            last_proof, proof3, last_hash, 75001, 112501, 3))
+            last_proof, proof3, last_hash, 50001, 75001, 3))
 
         th4 = threading.Thread(target=fun1, args=(
-            last_proof, proof4, last_hash, 112501, 150001, 4))
+            last_proof, proof4, last_hash, 75001, 100001, 4))
 
         th5 = threading.Thread(target=fun1, args=(
-            last_proof, proof5, last_hash, 150001, 187501, 5))
+            last_proof, proof5, last_hash, 100001, 125001, 5))
 
         th6 = threading.Thread(target=fun1, args=(
-            last_proof, proof6, last_hash, 187501, 225001, 6))
+            last_proof, proof6, last_hash, 125001, 150001, 6))
 
         th7 = threading.Thread(target=fun1, args=(
-            last_proof, proof7, last_hash, 225001, 262501, 7))
+            last_proof, proof7, last_hash, 150001, 175001, 7))
 
         th8 = threading.Thread(target=fun1, args=(
-            last_proof, proof8, last_hash, 262501, 300001, 8))
+            last_proof, proof8, last_hash, 175001, 200001, 8))
 
         th9 = threading.Thread(target=fun1, args=(
-            last_proof, proof9, last_hash, 300001, sys.maxsize, 9))
+            last_proof, proof9, last_hash, 200001, 225001, 9))
 
         th10 = threading.Thread(target=fun1, args=(
-            last_proof, proof9, last_hash, 300001, sys.maxsize, 9))
+            last_proof, proof10, last_hash, 225001, 250001, 10))
 
         th11 = threading.Thread(target=fun1, args=(
-            last_proof, proof9, last_hash, 300001, sys.maxsize, 9))
+            last_proof, proof11, last_hash, 250001, 275001, 11))
+
+        th12 = threading.Thread(target=fun1, args=(
+            last_proof, proof12, last_hash, 275001, 300001, 12))
+
+        th13 = threading.Thread(target=fun1, args=(
+            last_proof, proof13, last_hash, 300001, sys.maxsize, 13))
 
         th1.start()
         th2.start()
@@ -263,9 +271,11 @@ class Blockchain:
         th9.start()
         th10.start()
         th11.start()
+        th12.start()
+        th13.start()
 
         if flags is not True:
-            th11.join()
+            th13.join()
 
         end_time = time.time()
         print('proof result : {}'.format(proof_Result))
