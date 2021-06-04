@@ -54,4 +54,7 @@ plt.scatter(data_frame['cycle8'], df['cnt'], color='blue', alpha=0.5)
 plt.scatter(data_frame['cycle9'], df['cnt'], color='blue', alpha=0.5)
 plt.scatter(data_frame['cycle10'], df['cnt'], color='blue', alpha=0.5)
 
+plt.ylabel('Nonce generation point', fontsize=10, color='black')
+plt.xlabel('Range', fontsize=10, color='black')
+
 plt.show()
