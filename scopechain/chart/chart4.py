@@ -52,7 +52,7 @@ plt.xlabel('Cycle', fontsize=10, color='blue')  # x축 라벨
 yticks = list(ax1.get_yticks())  # y축 눈금을 가져온다.
 
 for y in yticks:
-    ax1.axhline(y, linestyle=(0, (2, 3)), color='grey', alpha=0.5)  # 눈금선 생성
+    ax1.axhline(y, linestyle=(0, (2, 3)), color='grey', alpha=0.2)  # 눈금선 생성
 
 
 plt.show()
