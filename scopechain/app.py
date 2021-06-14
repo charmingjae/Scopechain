@@ -36,12 +36,12 @@ def catchCam():
 
     while cv2.waitKey(33) < 0:
         ret, frame = capture.read()
-        cv2.imwrite('./img/a.jpg', frame)
+        # cv2.imwrite('./img/a.jpg', frame)
 
-        shutil.copyfile(os.path.join('./img', 'a.jpg'),
-                        os.path.join('./img', 'a_tmp.jpg'))
+        # shutil.copyfile(os.path.join('./img', 'a.jpg'),
+        #                 os.path.join('./img', 'a_tmp.jpg'))
 
-        cv2.imwrite('./img/a.jpg', frame)
+        # cv2.imwrite('./img/a.jpg', frame)
 
         return frame
 
@@ -159,7 +159,7 @@ def new_tran():
         jsonObj['snapshot'], jsonObj['timestamp'])
     # print('트랜잭션 생성 완료')
     # print(blockchain.current_transactions)
-    threading.Timer(0, new_tran).start()
+    threading.Timer(6, new_tran).start()
 
 
 imgCnt = 0
