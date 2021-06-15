@@ -202,26 +202,10 @@ class Blockchain:
 
         start_time = time.time()
         p1 = Process(target=self.find_proof, args=(flags, 0,
-                                                   last_proof, proof1, last_hash, proof_result, 0, 75001))
-        p2 = Process(target=self.find_proof, args=(flags, 1,
-                                                   last_proof, proof2, last_hash, proof_result, 75001, 150001))
-        p3 = Process(target=self.find_proof, args=(flags, 2,
-                                                   last_proof, proof3, last_hash, proof_result, 150001, 225001))
-        p4 = Process(target=self.find_proof, args=(flags, 3,
-                                                   last_proof, proof4, last_hash, proof_result, 225001, 300001))
-        p5 = Process(target=self.find_proof, args=(flags, 4,
-                                                   last_proof, proof5, last_hash, proof_result, 300001, sys.maxsize))
+                                                   last_proof, proof1, last_hash, proof_result, 0, sys.maxsize))
 
         p1.start()
-        p2.start()
-        p3.start()
-        p4.start()
-        p5.start()
         p1.join()
-        p2.join()
-        p3.join()
-        p4.join()
-        p5.join()
 
         end_time = time.time()
         print('TIMETIMETIMETIME : ', end_time-start_time)
