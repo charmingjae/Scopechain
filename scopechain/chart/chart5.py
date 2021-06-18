@@ -61,13 +61,13 @@ def main():
     # 4. x축 세부설정
     ax.set_xticks(range(len(xticks)))
     ax.set_xticklabels(xticks, fontsize=10)
-    ax.set_xlabel('Cancer type', fontsize=14)
+    ax.set_xlabel('Number of thread/process', fontsize=14)
 
     # 5. y축 세부설정
     ax.set_ylim([0, 12])
     # ax.set_yticks([0.5, 0.55, 0.6, 0.65, 0.7, 0.75])
     ax.yaxis.set_tick_params(labelsize=10)
-    ax.set_ylabel('Prediction Accuracy', fontsize=14)
+    ax.set_ylabel('Average detection time', fontsize=14)
 
     # 6. 범례 나타내기
     ax.legend(loc='upper left', shadow=True, ncol=1)

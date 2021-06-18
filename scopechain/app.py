@@ -93,7 +93,7 @@ def new_mine():
     print("걸린 시간 : {} sec".format(end_time-start_time))
     mine_cnt += 1
     # threading.Timer(5, new_mine).start()
-    threading.Timer(0, new_mine).start()
+    # threading.Timer(0, new_mine).start()
 
 
 @ app.route('/nodes/register', methods=['POST'])
@@ -123,43 +123,45 @@ def new_tran():
     global img_tmp
     global cnt
 
-    test = catchCam()
+    for i in range(1, 51):
+        test = catchCam()
 
-    # b64로 인코드 후 utf-8로 디코딩함
-    b64 = base64.b64encode(pickle.dumps(test))
-    b64 = b64.decode('utf-8')
+        # b64로 인코드 후 utf-8로 디코딩함
+        b64 = base64.b64encode(pickle.dumps(test))
+        b64 = b64.decode('utf-8')
 
-    # jsonObj = json.dumps(
-    #     {'snapshot': b64, 'timestamp': str(datetime.datetime.now())}, ensure_ascii=False)
-    jsonObj = json.dumps(
-        {'snapshot': b64, 'timestamp': str(datetime.datetime.now())}, ensure_ascii=False)
-    jsonObj = json.loads(jsonObj)
-    filename = 'test{0}.jpg'.format(cnt)
-    with open(filename, 'wb') as f:
-        cv2.imwrite(filename, np.array(test.tolist()))
+        # jsonObj = json.dumps(
+        #     {'snapshot': b64, 'timestamp': str(datetime.datetime.now())}, ensure_ascii=False)
+        jsonObj = json.dumps(
+            {'snapshot': b64, 'timestamp': str(datetime.datetime.now())}, ensure_ascii=False)
+        jsonObj = json.loads(jsonObj)
+        filename = 'test{0}.jpg'.format(cnt)
+        with open(filename, 'wb') as f:
+            cv2.imwrite(filename, np.array(test.tolist()))
 
-    # Bot part
-    # Convert numpy array to Image using PIL
-    converted_img = Image.fromarray(test, 'RGB')
+        # Bot part
+        # Convert numpy array to Image using PIL
+        converted_img = Image.fromarray(test, 'RGB')
 
-    # 나중에 def로 분리할지 생각 해보기
-    bio = BytesIO()
-    bio.name = str(uuid.uuid4())
-    converted_img.save(bio, 'JPEG')
-    bio.seek(0)
+        # 나중에 def로 분리할지 생각 해보기
+        bio = BytesIO()
+        bio.name = str(uuid.uuid4())
+        converted_img.save(bio, 'JPEG')
+        bio.seek(0)
 
-    required = ['snapshot', 'timestamp']
-    if not all(k in jsonObj for k in required):
-        return 'Missing values', 400
+        required = ['snapshot', 'timestamp']
+        if not all(k in jsonObj for k in required):
+            return 'Missing values', 400
 
-    # Create a new Transaction
-    # index = blockchain.new_transaction(
-    #     jsonObj['location'], jsonObj['name'], jsonObj['phone'])
-    index = blockchain.new_transaction(
-        jsonObj['snapshot'], jsonObj['timestamp'])
+        # Create a new Transaction
+        # index = blockchain.new_transaction(
+        #     jsonObj['location'], jsonObj['name'], jsonObj['phone'])
+        index = blockchain.new_transaction(
+            jsonObj['snapshot'], jsonObj['timestamp'])
     # print('트랜잭션 생성 완료')
     # print(blockchain.current_transactions)
-    threading.Timer(6, new_tran).start()
+    new_mine()
+    threading.Timer(0, new_tran).start()
 
 
 imgCnt = 0
@@ -267,7 +269,7 @@ if __name__ == '__main__':
     # p2.start()
     # p3.start()
 
-    new_mine()
+    # new_mine()
     new_tran()
     # p1.join()
     # p3.join()

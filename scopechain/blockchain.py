@@ -8,11 +8,12 @@ import requests
 import datetime
 import concurrent.futures
 import sys
-from multiprocessing import Process, Value
-from ctypes import c_bool, c_int
-# Block chain
 
-getTime = 0
+flags = False
+proof_Result = None
+time_cnt = 0
+arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+# Block chain
 
 
 class Blockchain:
@@ -159,24 +160,13 @@ class Blockchain:
             block, sort_keys=True).encode()
         return hashlib.sha256(block_string).hexdigest()
 
-    def find_proof(self, flags, idx, last_proof, proof, last_hash, proof_result, start, end):
-
-        for i in range(start, end):
-            # print('fun{0} now PROOF : {1}'.format(idx, proof))
-            if flags.value is True:
-                # print('[fun{0}] flags.value is True'.format(idx))
-                break
-            if self.valid_proof(last_proof, proof, last_hash) is True:
-                flags.value = True
-                proof_result.value = proof
-                print('[fun{0} is finished] proof : {1}'.format(
-                    idx, proof_result.value))
-                print('NOW FLAGS : ', flags.value)
-                break
-            proof += 1
-
     def proof_of_work(self, last_block):
-        global getTime
+        start_time = time.time()
+        global flags
+        global proof_Result
+        global time_cnt
+        flags = False
+        proof_Result = None
         """
             Simple Proof of Work Algorithm:
             - Find a number p' such that hash(pp') contains leading 4 zeroes
@@ -189,33 +179,104 @@ class Blockchain:
         last_proof = last_block['proof']
         last_hash = self.hash(last_block)
 
-        # Flags
-        flags = Value(c_bool, False)
-        proof_result = Value(c_int, 0)
+        # proof = 0
+        # while self.valid_proof(last_proof, proof, last_hash) is False:
+        #     proof += 1
 
-        # Proof
+        # end_time = time.time()
+        # print("프루프 걸린 시간 : {} sec".format(end_time-start_time))
+        # time_cnt += end_time-start_time
+        # print('현재까지 걸린 시간 : ', time_cnt)
+        # print('평균시간 : ', time_cnt/100)
+        # return proof
+
         proof1 = 0
-        proof2 = 75001
-        proof3 = 150001
-        proof4 = 225001
-        proof5 = 300001
+        proof2 = 30001
+        proof3 = 60001
+        proof4 = 90001
+        proof5 = 120001
+        proof6 = 150001
+        proof7 = 180001
+        proof8 = 210001
+        proof9 = 240001
+        proof10 = 270001
+        proof11 = 300001
 
-        start_time = time.time()
-        p1 = Process(target=self.find_proof, args=(flags, 0,
-                                                   last_proof, proof1, last_hash, proof_result, 0, sys.maxsize))
+        def fun1(last_proof, proof, last_hash, start, finish, idx):
+            global proof_Result
+            global flags
+            global arr
+            # print('fun{0} now flags : {1}'.format(idx, flags))
+            for i in range(start, finish):
+                if flags:
+                    break
+                if self.valid_proof(last_proof, proof, last_hash) is True:
+                    flags = True
+                    proof_Result = proof
+                    arr[idx-1] += 1
+                    print('[fun{0} is finished] proof : {1}'.format(
+                        idx, proof_Result))
+                    break
+                proof += 1
 
-        p1.start()
-        p1.join()
+        th1 = threading.Thread(target=fun1, args=(
+            last_proof, proof1, last_hash, 0, sys.maxsize, 1))
+
+        # th2 = threading.Thread(target=fun1, args=(
+        #     last_proof, proof2, last_hash, 30001, 60001, 2))
+
+        # th3 = threading.Thread(target=fun1, args=(
+        #     last_proof, proof3, last_hash, 60001, 90001, 3))
+
+        # th4 = threading.Thread(target=fun1, args=(
+        #     last_proof, proof4, last_hash, 90001, 120001, 4))
+
+        # th5 = threading.Thread(target=fun1, args=(
+        #     last_proof, proof5, last_hash, 120001, 150001, 5))
+
+        # th6 = threading.Thread(target=fun1, args=(
+        #     last_proof, proof6, last_hash, 150001, 180001, 6))
+
+        # th7 = threading.Thread(target=fun1, args=(
+        #     last_proof, proof7, last_hash, 180001, 210001, 7))
+
+        # th8 = threading.Thread(target=fun1, args=(
+        #     last_proof, proof8, last_hash, 210001, 240001, 8))
+
+        # th9 = threading.Thread(target=fun1, args=(
+        #     last_proof, proof9, last_hash, 240001, 270001, 9))
+
+        # th10 = threading.Thread(target=fun1, args=(
+        #     last_proof, proof10, last_hash, 270001, 300001, 10))
+
+        # th11 = threading.Thread(target=fun1, args=(
+        #     last_proof, proof11, last_hash, 300001, sys.maxsize, 11))
+
+        th1.start()
+        # th2.start()
+        # th3.start()
+        # th4.start()
+        # th5.start()
+        # th6.start()
+        # th7.start()
+        # th8.start()
+        # th9.start()
+        # th10.start()
+        # th11.start()
+
+        if flags is not True:
+            th1.join()
 
         end_time = time.time()
-        print('TIMETIMETIMETIME : ', end_time-start_time)
-        getTime += end_time-start_time
+        print('proof result : {}'.format(proof_Result))
+        # print("프루프 걸린 시간 : {} sec".format(end_time-start_time))
+        time_cnt += end_time-start_time
+        print('현재까지 걸린 시간 : ', time_cnt)
+        print('평균시간 : ', time_cnt/100)
+        print('범위 별 정보 : ', arr)
+        print('cannot found : ', 100 - sum(arr))
 
-        print('걸린 평균 시간 : ', getTime/100)
-
-        print('proof_result : ', proof_result.value)
-
-        return proof_result.value
+        return proof_Result
 
     @ staticmethod
     def valid_proof(last_proof, proof, last_hash):
