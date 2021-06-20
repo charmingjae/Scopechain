@@ -222,8 +222,8 @@ class Blockchain:
         th1 = threading.Thread(target=fun1, args=(
             last_proof, proof1, last_hash, 0, sys.maxsize, 1))
 
-        # th2 = threading.Thread(target=fun1, args=(
-        #     last_proof, proof2, last_hash, 30001, 60001, 2))
+        th2 = threading.Thread(target=fun1, args=(
+            last_proof, proof2, last_hash, 30001, 60001, 2))
 
         # th3 = threading.Thread(target=fun1, args=(
         #     last_proof, proof3, last_hash, 60001, 90001, 3))
