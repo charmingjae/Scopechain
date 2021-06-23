@@ -191,10 +191,10 @@ class Blockchain:
         # return proof
 
         proof1 = 0
-        proof2 = 30001
-        proof3 = 60001
-        proof4 = 90001
-        proof5 = 120001
+        proof2 = 75001
+        proof3 = 150001
+        proof4 = 225001
+        proof5 = 300001
         proof6 = 150001
         proof7 = 180001
         proof8 = 210001
@@ -220,19 +220,19 @@ class Blockchain:
                 proof += 1
 
         th1 = threading.Thread(target=fun1, args=(
-            last_proof, proof1, last_hash, 0, sys.maxsize, 1))
+            last_proof, proof1, last_hash, 0, 75001, 1))
 
-        # th2 = threading.Thread(target=fun1, args=(
-        #     last_proof, proof2, last_hash, 30001, 60001, 2))
+        th2 = threading.Thread(target=fun1, args=(
+            last_proof, proof2, last_hash, 75001, 150001, 2))
 
-        # th3 = threading.Thread(target=fun1, args=(
-        #     last_proof, proof3, last_hash, 60001, 90001, 3))
+        th3 = threading.Thread(target=fun1, args=(
+            last_proof, proof3, last_hash, 150001, 225001, 3))
 
-        # th4 = threading.Thread(target=fun1, args=(
-        #     last_proof, proof4, last_hash, 90001, 120001, 4))
+        th4 = threading.Thread(target=fun1, args=(
+            last_proof, proof4, last_hash, 225001, 300001, 4))
 
-        # th5 = threading.Thread(target=fun1, args=(
-        #     last_proof, proof5, last_hash, 120001, 150001, 5))
+        th5 = threading.Thread(target=fun1, args=(
+            last_proof, proof5, last_hash, 300001, sys.maxsize, 5))
 
         # th6 = threading.Thread(target=fun1, args=(
         #     last_proof, proof6, last_hash, 150001, 180001, 6))
@@ -253,10 +253,10 @@ class Blockchain:
         #     last_proof, proof11, last_hash, 300001, sys.maxsize, 11))
 
         th1.start()
-        # th2.start()
-        # th3.start()
-        # th4.start()
-        # th5.start()
+        th2.start()
+        th3.start()
+        th4.start()
+        th5.start()
         # th6.start()
         # th7.start()
         # th8.start()
